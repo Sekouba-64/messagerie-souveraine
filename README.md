@@ -4,7 +4,7 @@ Prototype de messagerie instantanée souveraine destinée aux agents de l’admi
 
 ## Objectif
 
-Fournir une messagerie :
+Fournir une messagerie:
 
 - hébergée sur une infrastructure maîtrisée (Docker Compose) ;
 - avec chiffrement de bout en bout (protocole Matrix – Olm/Megolm) ;
@@ -86,7 +86,7 @@ Le scénario complet (connexion, conversation chiffrée, groupe, test d’intrus
 - Authentification forte (TOTP) et Keycloak non encore intégrés.
 - Reverse proxy et HTTPS non configurés.
 - Fédération Matrix désactivée.
-- Données exclusivement fictives.
+- Données exclusivement fictive.
 
 ## Licence
 
