@@ -9,6 +9,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--locale=C --encoding=UTF8"
     ports:
       - "${POSTGRES_PORT}:5432"
     volumes:
@@ -18,6 +19,26 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: messagerie-synapse
+    restart: unless-stopped
+    user: "${UID}:${GID}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8008:8008"
+    volumes:
+      - ./deployment/synapse:/data
+    command: ["run", "-m", "synapse.app.homeserver", "--config-path", "/data/homeserver.yaml"]
+    healthcheck:
+      test: ["CMD", "curl", "-fSs", "http://localhost:8008/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
 volumes:
   postgres-data:

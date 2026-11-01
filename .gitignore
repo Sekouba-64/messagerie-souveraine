@@ -18,3 +18,12 @@ logs/
 # Environnements de développement
 node_modules/
 __pycache__/
+
+# Secrets Synapse générés localement
+deployment/synapse/homeserver.yaml
+deployment/synapse/*.signing.key
+deployment/synapse/*.log.config
+
+# Données locales Synapse
+synapse-data/
+media-store/
