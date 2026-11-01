@@ -1,0 +1,20 @@
+# Secrets et variables locales
+.env
+
+# Données Docker et bases locales
+postgres-data/
+synapse-data/
+media-store/
+
+# Journaux
+*.log
+logs/
+
+# Fichiers temporaires
+*.tmp
+*.swp
+.DS_Store
+
+# Environnements de développement
+node_modules/
+__pycache__/
