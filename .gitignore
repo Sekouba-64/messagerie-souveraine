@@ -27,3 +27,8 @@ deployment/synapse/*.log.config
 # Données locales Synapse
 synapse-data/
 media-store/
+
+# Données runtime locales
+/media-store/
+/synapse-data/
+/deployment/synapse/media_store/
