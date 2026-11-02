@@ -336,3 +336,28 @@ Le fichier a été reçu et ouvert correctement par Bob dans la conversation chi
 Le transfert fonctionnel d'un fichier dans une conversation chiffrée a été démontré côté client Element.
 
 Ce test ne constitue pas un audit cryptographique indépendant. Il confirme le fonctionnement du parcours utilisateur avec le chiffrement Matrix activé.
+
+## 12. Test de révocation globale d'un compte
+
+### Compte utilisé
+
+- Compte fictif : `@intrus.test:messagerie.local`
+- Opération : désactivation administrative du compte
+- Invalidation des sessions et appareils : activée
+
+### Procédure
+
+- Le compte fictif a été actif sur le homeserver.
+- Une révocation administrative a été exécutée.
+- Les sessions et appareils associés ont été déconnectés.
+- Une nouvelle tentative de connexion a été effectuée.
+
+### Résultat observé
+
+Le compte a été marqué comme désactivé et la tentative de reconnexion a été refusée.
+
+### Conclusion
+
+La désactivation administrative et l'invalidation des sessions permettent de révoquer l'accès du compte fictif au homeserver.
+
+Cette opération n'efface pas rétroactivement les messages qui auraient déjà été reçus et déchiffrés localement sur un appareil.
