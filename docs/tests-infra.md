@@ -317,3 +317,22 @@ Retrait d'un membre
 ```
 
 Les tests ont été réalisés avec des comptes, des messages et des données fictifs uniquement.
+
+## 8 bis. Test d'un fichier dans une conversation chiffrée
+
+### Procédure
+
+- Alice et Bob ont ouvert une conversation privée chiffrée.
+- Alice a envoyé le fichier fictif `document-test.txt`.
+- Bob a reçu et ouvert le fichier.
+- Aucune donnée réelle ou sensible n'a été utilisée.
+
+### Résultat observé
+
+Le fichier a été reçu et ouvert correctement par Bob dans la conversation chiffrée.
+
+### Conclusion
+
+Le transfert fonctionnel d'un fichier dans une conversation chiffrée a été démontré côté client Element.
+
+Ce test ne constitue pas un audit cryptographique indépendant. Il confirme le fonctionnement du parcours utilisateur avec le chiffrement Matrix activé.
