@@ -372,6 +372,7 @@ Les documents techniques du projet sont regroupés dans les répertoires `docs/`
 | [Architecture infrastructure](docs/architecture-infra.md) | Présentation de l'architecture technique |
 | [Commandes infrastructure](docs/commandes-infra.md) | Commandes d'administration et d'exploitation |
 | [Tests infrastructure](docs/tests-infra.md) | Vérifications et résultats des tests techniques |
+| [Note de sécurité](docs/note-securite.md) | Menaces, protections et limites du prototype |
 | [Comptes fictifs](demo/comptes-fictifs.md) | Comptes et rôles utilisés pour la démonstration |
 | [Scénario de démonstration](demo/scenario-demo.md) | Déroulement de la démonstration finale |
 
