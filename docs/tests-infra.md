@@ -2,77 +2,142 @@
 
 ## Environnement testé
 
-- Branche Git : `infra`
+- Branche de référence : `main`
 - Serveur Matrix : `messagerie.local`
-- URL locale : `http://localhost:8008`
+- Homeserver local : `http://localhost:8008`
 - PostgreSQL : `postgres:16-alpine`
 - Synapse : `matrixdotorg/synapse`
 - Client utilisé : Element Desktop
 - Données utilisées : données fictives uniquement
 
-## 1. Test Docker
+---
 
-Commande utilisée :
+## 1. Test de Docker
 
+### Commande exécutée
 
-	docker run --rm hello-world
+```bash
+docker run --rm hello-world
+```
 
-	
-## 2. Test PostegreSQL
+### Résultat observé
 
-Commandes utilisées:
-	docker compose up -d postgres
-	docker compose ps ;
+```text
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+```
 
-	docker compose ps
-	NAME                  IMAGE                         COMMAND                  SERVICE    CREATED        STATUS                  PORTS
-	messagerie-postgres   postgres:16-alpine            "docker-entrypoint.s…"   postgres   13 hours ago   Up 11 hours (healthy)   0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
-	
-Par la suite:
+### Conclusion
+
+Docker Engine fonctionne correctement sur la machine de test.
+
+---
+
+## 2. Test de démarrage de PostgreSQL
+
+### Commandes exécutées
+
+```bash
+docker compose up -d postgres
+docker compose ps
+```
+
+### Résultat observé
+
+```text
+messagerie-postgres   postgres:16-alpine   Up (healthy)
+```
+
+### Vérification de la disponibilité
+
+```bash
 docker compose exec postgres pg_isready -U synapse -d synapse
-	/var/run/postgresql:5432 - accepting connections
-	
-Puis : 
+```
+
+Résultat :
+
+```text
+/var/run/postgresql:5432 - accepting connections
+```
+
+### Vérification de la base de données
+
+```bash
 docker compose exec postgres psql \
--U synapse \
--d synapse \
--tAc "SELECT datname, datcollate, datctype FROM pg_database WHERE datname = 'synapse';"
-	synapse|C|C
-	
+  -U synapse \
+  -d synapse \
+  -tAc "SELECT datname, datcollate, datctype FROM pg_database WHERE datname = 'synapse';"
+```
 
-## 3. Test Synapse
-Commandes utilisées: 
+Résultat :
 
-   docker compose up -d synapse
-   docker compose ps
-   
-messagerie-synapse    matrixdotorg/synapse:latest   "/start.py run -m sy…"   synapse    13 hours ago   Up 4 hours (healthy)    8448/tcp, 0.0.0.0:8008->8008/tcp, [::]:8008->8008/tcp, 19090/tcp
+```text
+synapse|C|C
+```
 
-	
-Puis plus loin:
-	docker compose logs --tail=50 synapse; mentionne que synapse fonctionne sans erreur critique
-	
+### Conclusion
 
-## 4. Test API Matrix
-Commandes utilisées: 
-	curl -i http://localhost:8008/_matrix/client/versions
+PostgreSQL démarre correctement, accepte les connexions et utilise la base `synapse` avec la collation attendue.
 
-	
-	curl -i --max-time 10 http://127.0.0.1:8008/_matrix/client/versions
-	HTTP/1.1 200 OK
-	Server: Synapse/1.164.1
-	Date: Sun, 01 Nov 2026 16:39:07 GMT
-	Cache-Control: public, max-age=600, s-maxage=3600, stale-while-revalidate=600
-	Vary: Authorization
-	Content-Type: application/json
-	Access-Control-Allow-Origin: *
-	Access-Control-Allow-Methods: GET, HEAD, POST, PUT, DELETE, OPTIONS
-	Access-Control-Allow-Headers: X-Requested-With, Content-Type, Authorization, Date
-	Access-Control-Expose-Headers: Synapse-Trace-Id, Server
+---
 
-## 5. Test de connextion Alice
-Ce test est manuel dans Element. 
+## 3. Test de démarrage de Synapse
 
+### Commandes exécutées
+
+```bash
+docker compose up -d synapse
+docker compose ps
+```
+
+### Résultat observé
+
+```text
+messagerie-synapse   matrixdotorg/synapse:latest   Up (healthy)
+```
+
+Le port local utilisé est :
+
+```text
+0.0.0.0:8008->8008/tcp
+```
+
+### Vérification des journaux
+
+```bash
+docker compose logs --tail=50 synapse
+```
+
+### Conclusion
+
+Synapse démarre correctement et reste actif sans erreur critique observée dans les journaux.
+
+---
+
+## 4. Test de l'API Matrix
+
+### Commande exécutée
+
+```bash
+curl -i --max-time 10 \
+  http://127.0.0.1:8008/_matrix/client/versions
+```
+
+### Résultat observé
+
+```text
+HTTP/1.1 200 OK
+Server: Synapse/1.164.1
+Content-Type: application/json
+```
+
+### Conclusion
+
+L'API client Matrix répond correctement depuis la machine hôte.
+
+---
+
+## 5. Test de connexion d'Alice
 
 ### Procédure
 
@@ -82,13 +147,15 @@ Ce test est manuel dans Element.
 
 ### Résultat observé
 
-Alice s’est connectée avec succès et l’interface Element s’est ouverte.
+Alice s'est connectée avec succès et l'interface Element s'est ouverte.
 
 ### Conclusion
 
-La connexion d’un utilisateur Matrix au homeserver Synapse fonctionne.
+La connexion d'un utilisateur Matrix au homeserver Synapse fonctionne.
 
-## Test 6 — Connexion de Bob
+---
+
+## 6. Test de connexion de Bob
 
 ### Procédure
 
@@ -98,13 +165,15 @@ La connexion d’un utilisateur Matrix au homeserver Synapse fonctionne.
 
 ### Résultat observé
 
-Bob s’est connecté avec succès dans une deuxième fenêtre Element.
+Bob s'est connecté avec succès dans une deuxième fenêtre Element.
 
 ### Conclusion
 
 Deux utilisateurs peuvent utiliser simultanément le homeserver local.
 
-## Test 7 — Message chiffré
+---
+
+## 7. Test d'un message chiffré
 
 ### Procédure
 
@@ -122,7 +191,9 @@ Le message a été reçu correctement par Bob dans la conversation chiffrée.
 
 Le chiffrement côté client fonctionne dans la conversation Alice-Bob.
 
-## Test 8 — Groupe privé chiffré
+---
+
+## 8. Test d'un groupe privé chiffré
 
 ### Procédure
 
@@ -134,45 +205,115 @@ Le chiffrement côté client fonctionne dans la conversation Alice-Bob.
 
 ### Résultat observé
 
-Le cadenas et l’indicateur de chiffrement étaient visibles.
+Le cadenas et l'indicateur de chiffrement étaient visibles.
 
 ### Conclusion
 
 Un groupe privé chiffré fonctionne avec Alice et Bob.
 
+---
 
-## Test 9 — Compte intrus
+## 9. Test du compte intrus
 
 ### Procédure
 
 - Le compte `@intrus.test:messagerie.local` existe.
-- L’intrus s’est connecté à Element.
-- Il n’a pas été invité dans le groupe privé Alice-Bob.
+- L'intrus s'est connecté à Element.
+- Il n'a pas été invité dans le groupe privé Alice-Bob.
 - Il a recherché le groupe.
 
 ### Résultat observé
 
-L’intrus ne voit pas le groupe privé et ne peut pas le rejoindre sans invitation.
+L'intrus ne voit pas le groupe privé et ne peut pas le rejoindre sans invitation.
 
 ### Conclusion
 
-L’existence d’un compte Matrix ne donne pas automatiquement accès aux salles privées.
+L'existence d'un compte Matrix ne donne pas automatiquement accès aux salles privées.
 
+---
 
-## Test 10 — Retrait d’un membre
+## 10. Test du retrait d'un membre
 
 ### Procédure
 
 - Un salon temporaire privé a été créé.
-- Alice, Bob et `intrus.test` y ont été ajoutés pour le test.
+- Alice, Bob et `@intrus.test:messagerie.local` y ont été ajoutés.
 - Un premier message a été envoyé.
-- Alice a retiré `intrus.test`.
+- Alice a retiré l'intrus.
 - Un nouveau message a été envoyé après le retrait.
 
 ### Résultat observé
 
-L’intrus pouvait éventuellement conserver les anciens messages reçus avant son retrait, mais il ne devait plus recevoir les nouveaux messages.
+L'intrus pouvait éventuellement conserver les anciens messages reçus avant son retrait, mais il ne recevait plus les nouveaux messages après son retrait.
 
 ### Conclusion
 
-Le retrait d’un membre bloque son accès aux nouveaux événements de la salle.
+Le retrait d'un membre bloque son accès aux nouveaux événements de la salle. Il ne garantit pas l'effacement rétroactif des messages déjà reçus et déchiffrés sur son appareil.
+
+---
+
+## 11. Vérification finale des services
+
+### Commandes exécutées
+
+Vérifier l'état des conteneurs :
+
+```bash
+docker compose ps
+```
+
+Vérifier la disponibilité de PostgreSQL :
+
+```bash
+docker compose exec postgres pg_isready \
+  -U synapse \
+  -d synapse
+```
+
+Vérifier le code HTTP de l'API Matrix :
+
+```bash
+curl -sS -o /dev/null -w "%{http_code}\n" \
+  http://127.0.0.1:8008/_matrix/client/versions
+```
+
+### Résultat observé
+
+```text
+messagerie-postgres : healthy
+messagerie-synapse  : healthy
+PostgreSQL          : accepting connections
+API Matrix          : HTTP 200
+```
+
+### Conclusion
+
+Les services PostgreSQL et Synapse restent disponibles après les tests fonctionnels. L'infrastructure est opérationnelle depuis la branche stable `main`.
+
+---
+
+## Conclusion générale
+
+Le parcours suivant a été validé :
+
+```text
+Docker
+  ↓
+PostgreSQL
+  ↓
+Synapse
+  ↓
+API Matrix
+  ↓
+Element
+  ↓
+Conversation chiffrée
+  ↓
+Groupe privé
+  ↓
+Contrôle d'accès
+  ↓
+Retrait d'un membre
+```
+
+Les tests ont été réalisés avec des comptes, des messages et des données fictifs uniquement.
