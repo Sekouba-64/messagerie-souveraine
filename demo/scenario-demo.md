@@ -10,8 +10,11 @@ Ce prototype propose une messagerie **hébergée localement**, avec chiffrement 
 
 Depuis la racine du projet :
 
-    docker compose up -d
-    docker compose ps
+```bash
+docker compose up -d
+docker compose ps
+```
+
 
 Montrer que les conteneurs messagerie-postgres et messagerie-synapse sont actifs.
 
